@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtualenv
+.venv/
+
+# uv
+.uv-cache/
+
+# Ambiente
+.env
+.env.*
+!.env.example
+
+# IDEs
+.vscode/
+.idea/
+
+# Testes
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+logs/
+
+# Dados locais
+data/input/
+data/output/
+data/xml/
+data/mirror/
+
+# Sistema
+.DS_Store
+Thumbs.db
