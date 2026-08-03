@@ -22,7 +22,3 @@ def get_connection():
         yield conn
     finally:
         conn.close()
-
-
-
-
