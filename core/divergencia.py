@@ -4,7 +4,7 @@ import polars as pl
 logger = logging.getLogger(__name__)
 
 
-def divergencia(df: pl.DataFrame)-> tuple[pl.DataFrame, pl.DataFrame]:
+def verifica_divergencia(df: pl.DataFrame)-> tuple[pl.DataFrame, pl.DataFrame]:
 
     condicao_divergencia = pl.any_horizontal(
         pl.all().exclude("Código", "Coleção").n_unique().over("Código") > 1
@@ -21,6 +21,6 @@ def divergencia(df: pl.DataFrame)-> tuple[pl.DataFrame, pl.DataFrame]:
 
 
 
-    return df_divergentes, df_limpo
+    return df_limpo, df_divergentes
 
 
