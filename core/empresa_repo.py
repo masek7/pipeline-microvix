@@ -9,7 +9,7 @@ def gerar_placeholders(quantidade: int) -> str:
     """função que gera os string de placeholders"""
     return ", ".join([f":{i+1}" for i in range(quantidade)])
 
-def buscar_por_eans(eans: list[str], conn: oracledb.Connection ) -> pl.DataFrame:
+def buscar_por_modelo(modelo: list[str], conn: oracledb.Connection ) -> pl.DataFrame:
 
     dfs = []
     columns = None
@@ -17,10 +17,10 @@ def buscar_por_eans(eans: list[str], conn: oracledb.Connection ) -> pl.DataFrame
 
     with conn.cursor() as cursor:
 
-        for chunk in batched(eans, 900):
+        for chunk in batched(modelo, 900):
 
             placeholders = gerar_placeholders(len(chunk))
-            query_final = query.format(ean_placeholders=placeholders)
+            query_final = query.format(modelo_placeholders=placeholders)
 
             cursor.execute(query_final, chunk)
 
