@@ -1,6 +1,6 @@
 import oracledb
 import polars as pl
-from infra.sql_loader import sql_ean
+from infra.sql_loader import sql_modelo
 from itertools import batched
 
 
@@ -13,7 +13,7 @@ def buscar_por_modelo(modelo: list[str], conn: oracledb.Connection ) -> pl.DataF
 
     dfs = []
     columns = None
-    query = sql_ean
+    query = sql_modelo
 
     with conn.cursor() as cursor:
 
