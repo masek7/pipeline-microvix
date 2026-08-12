@@ -1,6 +1,9 @@
 import oracledb
 from contextlib import contextmanager
 from infra.config import settings
+import logging
+
+logger = logging.getLogger(__name__)
 
 oracledb.init_oracle_client(
     lib_dir=settings.oracle_client_lib_dir,
@@ -18,7 +21,12 @@ def get_connection():
         password=settings.oracle_password,
         dsn=build_dsn(),
     )
+    logger.info("Conexão com o banco Oracle estabelecida com sucesso.")
     try:
         yield conn
+    except Exception as e:
+        logger.error("Erro ao conectar ao banco Oracle: %s", e)
+        raise
     finally:
+        logger.info("Conexão com o banco Oracle fechada com sucesso.")
         conn.close()
