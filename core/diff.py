@@ -2,8 +2,10 @@ import polars as pl
 
 def diff_base(candidatos: pl.DataFrame, base_microvix: pl.DataFrame) -> pl.DataFrame:
 
-    df_final = candidatos.join(base_microvix, on="Código", how="anti")
+    codigos_existentes = pl.concat([base_microvix["Código"], base_microvix["Código de barras"]]).drop_nulls().unique()
 
-    return df_final
+    resultado = candidatos.filter(~pl.col("Código").is_in(codigos_existentes))
+
+    return resultado
 
 
