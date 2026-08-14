@@ -36,6 +36,8 @@ data/input/
 data/output/
 data/xml/
 data/mirror/
+results/
+*.xlsx
 
 # Sistema
 .DS_Store
