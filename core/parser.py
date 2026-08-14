@@ -1,9 +1,11 @@
+from pathlib import Path
+
 import polars as pl
 import logging
 
 logger = logging.getLogger(__name__)
 
-def extrair_modelos_planilha(caminho_planilha: str, coluna_modelo: str = "Modelo") -> list[str]:
+def extrair_modelos_planilha(caminho_planilha: Path, coluna_modelo: str = "Modelo") -> list[str]:
 
     try:
         df = pl.read_excel(caminho_planilha, engine="calamine")
@@ -25,7 +27,7 @@ def extrair_modelos_planilha(caminho_planilha: str, coluna_modelo: str = "Modelo
         .to_list()
     )
 
-def extrair_eans_planilha(caminho_planilha: str, coluna_ean: str = "Código") -> list[str]:
+def extrair_eans_planilha(caminho_planilha: Path, coluna_ean: str = "Código") -> list[str]:
 
     try:
         df = pl.read_excel(caminho_planilha, engine="calamine")

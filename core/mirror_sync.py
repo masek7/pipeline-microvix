@@ -1,10 +1,11 @@
 import polars as pl
 import logging
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
 
-def mirror_stub(caminho_base: str) -> pl.DataFrame:
+def mirror_stub(caminho_base: Path) -> pl.DataFrame:
 
     try:
         df_base = pl.read_excel(

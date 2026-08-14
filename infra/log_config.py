@@ -3,7 +3,7 @@ import sys
 import time
 from pathlib import Path
 
-def setup_logging(nome_arquivo: str | None = None, diretorio_logs: str | Path = "data_reconcilier/logs", nivel: int = logging.INFO) -> None:
+def setup_logging(nome_arquivo: str | None = None, diretorio_logs: str | Path = "logs", nivel: int = logging.INFO) -> None:
 
     logging.getLogger().handlers.clear()  # Limpa os handlers existentes
 
