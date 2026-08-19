@@ -1,6 +1,6 @@
 import polars as pl
 import pytest
-from core.parser import extrair_modelos_planilha, extrair_eans_planilha
+from core.parser import extrair_modelos_planilha, extrair_eans_planilha, extrair_eans_xml
 
 
 def test_extrair_modelos_planilha_sucesso(tmp_path):
@@ -50,3 +50,67 @@ def test_extrair_eans_planilha_coluna_ausente(tmp_path):
 
     with pytest.raises(ValueError, match="A planilha não contém a coluna obrigatória 'Código'"):
         extrair_eans_planilha(str(arquivo_excel), coluna_ean="Código")
+
+
+def test_extrair_eans_xml_sucesso(tmp_path):
+    xml_content = """<?xml version="1.0" encoding="UTF-8"?>
+    <nfeProc xmlns="http://www.portalfiscal.inf.br/nfe" versao="4.00">
+        <NFe>
+            <infNFe Id="NFe123">
+                <det nItem="1">
+                    <prod>
+                        <cEAN>7891111111111</cEAN>
+                        <xProd>PRODUTO 1</xProd>
+                    </prod>
+                </det>
+                <det nItem="2">
+                    <prod>
+                        <cEAN> 7892222222222 </cEAN>
+                        <xProd>PRODUTO 2</xProd>
+                    </prod>
+                </det>
+                <det nItem="3">
+                    <prod>
+                        <cEAN>7891111111111</cEAN>
+                        <xProd>PRODUTO 1 REPETIDO</xProd>
+                    </prod>
+                </det>
+                <det nItem="4">
+                    <prod>
+                        <cEAN>SEM GTIN</cEAN>
+                        <xProd>SERVIÇO SEM EAN</xProd>
+                    </prod>
+                </det>
+            </infNFe>
+        </NFe>
+    </nfeProc>"""
+    arquivo_xml = tmp_path / "nfe_teste.xml"
+    arquivo_xml.write_text(xml_content, encoding="utf-8")
+
+    resultado = extrair_eans_xml(arquivo_xml)
+
+    assert resultado == ["7891111111111", "7892222222222"]
+
+
+def test_extrair_eans_xml_sem_itens(tmp_path):
+    xml_content = """<?xml version="1.0" encoding="UTF-8"?>
+    <nfeProc xmlns="http://www.portalfiscal.inf.br/nfe" versao="4.00">
+        <NFe>
+            <infNFe Id="NFe123">
+            </infNFe>
+        </NFe>
+    </nfeProc>"""
+    arquivo_xml = tmp_path / "nfe_vazia.xml"
+    arquivo_xml.write_text(xml_content, encoding="utf-8")
+
+    with pytest.raises(ValueError, match="Nenhum item de produto"):
+        extrair_eans_xml(arquivo_xml)
+
+
+def test_extrair_eans_xml_invalido(tmp_path):
+    arquivo_xml = tmp_path / "nfe_corrompida.xml"
+    arquivo_xml.write_text("<xml>invalido", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="possui estrutura inválida ou corrompida"):
+        extrair_eans_xml(arquivo_xml)
+

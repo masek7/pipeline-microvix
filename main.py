@@ -4,6 +4,7 @@ import typer
 
 from entrypoints.fluxo_colecao import executar_fluxo_colecao
 from entrypoints.fluxo_divergentes import executar_fluxo_divergentes
+from entrypoints.fluxo_nfe import executar_fluxo_nfe
 from infra.log_config import setup_logging
 
 app = typer.Typer(
@@ -146,6 +147,80 @@ def comando_divergentes(
         )
         typer.secho(
             f"\n✔ Fluxo de divergentes finalizado com sucesso! Resultados gerados na pasta 'results/'.",
+            fg=typer.colors.GREEN,
+            bold=True
+        )
+    except ValueError as e:
+        typer.secho(f"\nErro de validação: {e}", fg=typer.colors.RED, bold=True, err=True)
+        raise typer.Exit(code=1)
+    except Exception as e:
+        typer.secho(f"\nFalha durante a execução do fluxo: {e}", fg=typer.colors.RED, bold=True, err=True)
+        typer.secho("Consulte os arquivos na pasta 'logs/' para detalhes técnicos.", fg=typer.colors.YELLOW, err=True)
+        raise typer.Exit(code=1)
+
+
+@app.command("nfe")
+def comando_nfe(
+    nome_arquivo: Annotated[
+        str,
+        typer.Option(
+            ...,
+            "--nome-arquivo",
+            "-n",
+            help="Nome base para os arquivos gerados e arquivo de log."
+        )
+    ],
+    caminho_xml: Annotated[
+        Path,
+        typer.Option(
+            ...,
+            "--caminho-xml",
+            "-x",
+            help="Caminho do arquivo XML da Nota Fiscal (NFe)."
+        )
+    ],
+    caminho_base_microvix: Annotated[
+        Path,
+        typer.Option(
+            ...,
+            "--caminho-base-microvix",
+            "-b",
+            help="Caminho do arquivo Excel (.xlsx) com a base espelho da Microvix."
+        )
+    ]
+) -> None:
+    """
+    Executa o fluxo completo de validação de produtos a partir de um XML de Nota Fiscal (NFe).
+    Extrai os EANs do XML, busca os dados no Oracle, trata divergências, deduplica e calcula o diff contra a Microvix.
+    """
+    setup_logging(nome_arquivo=nome_arquivo)
+
+    if not caminho_xml.exists():
+        typer.secho(
+            f"Erro: O arquivo XML '{caminho_xml}' não foi encontrado.",
+            fg=typer.colors.RED,
+            bold=True,
+            err=True
+        )
+        raise typer.Exit(code=1)
+
+    if not caminho_base_microvix.exists():
+        typer.secho(
+            f"Erro: O arquivo da base Microvix '{caminho_base_microvix}' não foi encontrado.",
+            fg=typer.colors.RED,
+            bold=True,
+            err=True
+        )
+        raise typer.Exit(code=1)
+
+    try:
+        executar_fluxo_nfe(
+            nome_arquivo=nome_arquivo,
+            caminho_xml=caminho_xml,
+            caminho_base_microvix=caminho_base_microvix
+        )
+        typer.secho(
+            f"\n✔ Fluxo de NFe finalizado com sucesso! Resultados gerados na pasta 'results/'.",
             fg=typer.colors.GREEN,
             bold=True
         )
